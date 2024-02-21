@@ -1,0 +1,15 @@
+login_params:
+  - title: 'chromium登录'
+    chromium_usr: 'chengaoyi'
+    chromium_pwd: '123456'
+    chromium_expect: '.ra-user-name'
+
+  - title: 'firefox登录'
+    firefox_usr: 'autotest'
+    firefox_pwd: 'ABCabc@123'
+    firefox_expect: '.ra-user-name'
+
+  - title: 'webkit登录'
+    webkit_usr: 'autotest1'
+    webkit_pwd: 'ABCabc@123'
+    webkit_expect: '.ra-user-name'

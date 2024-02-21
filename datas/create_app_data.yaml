@@ -1,0 +1,10 @@
+create_app_params:
+  - title: '应用名称为空'
+    app_name: ''
+    app_desc: ''
+    expect: '请输入必填项'
+
+  - title: '应用名称格式有误'
+    app_name: '!@#$%^'
+    app_desc: ''
+    expect: '仅支持中英文+数字+符号（下划线、中划线、中英小括号、英文冒号），长度限制1~64'

@@ -1,0 +1,6 @@
+[32mINFO    [0m root:decorators.py:36 [操作] --> click [参数] --> "//span[text()='新建应用']"
+[32mINFO    [0m root:decorators.py:36 [操作] --> fill [参数] --> '//fly-form-item[1]//input', 'auto2024_02_21_17_32_08'
+[32mINFO    [0m root:decorators.py:36 [操作] --> fill [参数] --> '//fly-form-item[2]//input', 'auto20240221173209'
+[32mINFO    [0m root:decorators.py:36 [操作] --> click [参数] --> 'fly-select-item'
+[32mINFO    [0m root:decorators.py:36 [操作] --> click [参数] --> '.ra-select-item-option-content >> text=新模板'
+[32mINFO    [0m root:decorators.py:36 [操作] --> click [参数] --> "//*[contains(text(), '确定')]"

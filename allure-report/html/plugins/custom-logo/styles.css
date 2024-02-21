@@ -1,0 +1,15 @@
+.side-nav__brand {
+  background: url('allure_logo.png') no-repeat left center !important;
+  margin-left: 10px;
+  height: 50px;
+  background-size: contain !important;
+}
+
+.side-nav__brand span{
+  display: none;
+}
+.side-nav__brand:after{
+  content: "FLYDIY";
+  margin-left: 20px;
+  height: 50px;
+}

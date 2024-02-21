@@ -1,0 +1,208 @@
+{
+  "uid" : "b1a8273437954620fa374b796ffaacdd",
+  "name" : "behaviors",
+  "children" : [ {
+    "name" : "登录",
+    "children" : [ {
+      "name" : "用户登录",
+      "children" : [ {
+        "name" : "有效用户登录",
+        "uid" : "526792b7446a0d8c",
+        "parentUid" : "57f98e7fb888af497b8626d23c1b5612",
+        "status" : "passed",
+        "time" : {
+          "start" : 1708507910744,
+          "stop" : 1708507912965,
+          "duration" : 2221
+        },
+        "flaky" : false,
+        "newFailed" : false,
+        "parameters" : [ "'ABCabc@123'", "'autotest'" ]
+      } ],
+      "uid" : "57f98e7fb888af497b8626d23c1b5612"
+    } ],
+    "uid" : "6e12e06fb17fec92464fd1fd24bca881"
+  }, {
+    "name" : "test_create_app[新模板]",
+    "uid" : "ba4195738daa4193",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507912978,
+      "stop" : 1708507935087,
+      "duration" : 22109
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'新模板'" ]
+  }, {
+    "name" : "test_create_dict_group[group-code2024_02_21_17_31_44]",
+    "uid" : "4efccc64c42ba941",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507935101,
+      "stop" : 1708507938856,
+      "duration" : 3755
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'code2024_02_21_17_31_44'", "'group'" ]
+  }, {
+    "name" : "test_create_dict[string-string-字符串]",
+    "uid" : "54b1d1b3b2f46d09",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507938868,
+      "stop" : 1708507942406,
+      "duration" : 3538
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'string'", "'string'", "'字符串'" ]
+  }, {
+    "name" : "test_create_dict[number-number-数字]",
+    "uid" : "ab5d0ef89871fc91",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507942422,
+      "stop" : 1708507945751,
+      "duration" : 3329
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'number'", "'number'", "'数字'" ]
+  }, {
+    "name" : "test_create_dict_item[字符串-string-string]",
+    "uid" : "cecca625ebc14b6",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507945766,
+      "stop" : 1708507948342,
+      "duration" : 2576
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'字符串'", "'string'", "'string'" ]
+  }, {
+    "name" : "test_create_dict_item[数字-666-number]",
+    "uid" : "8cb06660595e5907",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507948357,
+      "stop" : 1708507951072,
+      "duration" : 2715
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'数字'", "'666'", "'number'" ]
+  }, {
+    "name" : "test_create_module",
+    "uid" : "87f878240976c1db",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507951090,
+      "stop" : 1708507954554,
+      "duration" : 3464
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ ]
+  }, {
+    "name" : "test_create_model[订单]",
+    "uid" : "538dc6b2b8586c4a",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507959118,
+      "stop" : 1708507964938,
+      "duration" : 5820
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'订单'" ]
+  }, {
+    "name" : "test_edit_table_field",
+    "uid" : "787bff9f84516b63",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708507968158,
+      "stop" : 1708508003359,
+      "duration" : 35201
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ ]
+  }, {
+    "name" : "test_set_dict_field_attr[17-string]",
+    "uid" : "b85445f0c6cd6b86",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708508007766,
+      "stop" : 1708508011243,
+      "duration" : 3477
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'string'", "'17'" ]
+  }, {
+    "name" : "test_set_dict_field_attr[18-number]",
+    "uid" : "965cd2b5f3ec14fa",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708508013746,
+      "stop" : 1708508017145,
+      "duration" : 3399
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'number'", "'18'" ]
+  }, {
+    "name" : "test_set_serial_field_attr[19-fly_{{DATE:yyyyMMddHHmmssSSS}}]",
+    "uid" : "cd97b81361e9024f",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708508019672,
+      "stop" : 1708508023975,
+      "duration" : 4303
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'19'", "'fly_{{DATE:yyyyMMddHHmmssSSS}}'" ]
+  }, {
+    "name" : "test_set_enum_field_attr[enum_name-enum_code-字符串]",
+    "uid" : "3972a88a902f0043",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "passed",
+    "time" : {
+      "start" : 1708508026455,
+      "stop" : 1708508034370,
+      "duration" : 7915
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ "'enum_code'", "'enum_name'", "'字符串'" ]
+  }, {
+    "name" : "test_set_model_attr",
+    "uid" : "a89e61d319217d8a",
+    "parentUid" : "b1a8273437954620fa374b796ffaacdd",
+    "status" : "broken",
+    "time" : {
+      "start" : 1708508036869,
+      "stop" : 1708508036870,
+      "duration" : 1
+    },
+    "flaky" : false,
+    "newFailed" : false,
+    "parameters" : [ ]
+  } ]
+}

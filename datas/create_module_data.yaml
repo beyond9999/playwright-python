@@ -1,0 +1,4 @@
+create_module_params:
+  - title: '模块名称为空'
+    module_name: ''
+    expect: '请输入必填项'

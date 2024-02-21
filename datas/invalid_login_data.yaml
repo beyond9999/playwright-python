@@ -1,0 +1,15 @@
+login_params:
+  - title: '账号密码为空'
+    usr: ''
+    pwd: ''
+    expect: '无效的用户名或密码。'
+
+  - title: '账号错误'
+    usr: 'test'
+    pwd: ''
+    expect: '无效的用户名或密码。'
+
+  - title: '密码错误'
+    usr: ''
+    pwd: 'password'
+    expect: '无效的用户名或密码。'
