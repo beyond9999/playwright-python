@@ -13,7 +13,7 @@ class BasePage:
         self.default_navigation_timeout = 30000
 
     def pause(self):
-        """暂停脚本执行(仅在有界面模式启动时才有效)"""
+        """暂停脚本执行 (仅在有界面模式启动时才有效)"""
         self.page.pause()
 
     def screenshot(self, selector: str = None, full_page=False):
@@ -25,16 +25,24 @@ class BasePage:
         else:
             allure_attach_screenshot(page=self.page)
 
-    def locator(self, selector: str, position: str = None, index: int = None):
+    def locator(self, selector: str, position: str = None, index: int = None, frame_name: str = None,
+                frame_id: str = None):
         """
         查找并返回元素
 
-        Args:
+        Args：
             selector (str): 元素选择器
             position (str, optional): 元素位置，可以是 "first" 或 "last"
             index (int, optional): 元素索引
+            frame_name (str, optional): frame的name属性
+            frame_id (str, optional): frame的id属性
         """
-        element = self.page.locator(selector)
+        if frame_name:
+            element = self.page.frame(frame_name).locator(selector)
+        elif frame_id:
+            element = self.page.frame_locator(frame_id).locator(selector)
+        else:
+            element = self.page.locator(selector)
 
         if position == "first":
             ele = element.first
@@ -45,29 +53,41 @@ class BasePage:
         else:
             ele = element
 
-        ele.wait_for()
+        ele.wait_for(timeout=self.timeout)
         ele.highlight()
 
         return ele
 
     @log_action
-    def click(self, selector: str, position: str = None, index: int = None):
+    def click(self, selector: str, position: str = None, index: int = None, frame_name: str = None,
+              frame_id: str = None):
         """点击元素"""
-        ele = self.locator(selector, position, index)
+        ele = self.locator(selector, position, index, frame_name, frame_id)
         if ele.is_enabled():
             ele.click()
 
         self.screenshot()
 
     @log_action
-    def fill(self, selector: str, input_value: str, position: str = None, index: int = None):
+    def fill(self, selector: str, input_value: str, position: str = None, index: int = None, frame_name: str = None,
+             frame_id: str = None):
         """输入文本"""
-        ele = self.locator(selector, position, index)
+        ele = self.locator(selector, position, index, frame_name, frame_id)
         if ele.is_editable():
             ele.clear()
             ele.fill(input_value)
 
         self.screenshot()
+
+    def mouse_wheel(self, delta_x: float, delta_y: float):
+        """
+        模拟鼠标滚轮操作
+
+        Args：
+            delta_x (float): 横向移动距离，正数表示向右，负数表示向左
+            delta_y (float): 纵向移动距离，正数表示向下，负数表示向上
+        """
+        self.page.mouse.wheel(delta_x, delta_y)
 
     def wait(self, seconds: float):
         """强制等待"""
@@ -78,16 +98,13 @@ class BasePage:
         """
         等待页面加载到特定状态
 
-        Args:
-            state (str, optional): 页面加载状态，可以是 "load"、"network"、"dom"
+        Args：
+            state (str, optional): 页面加载状态 (可填 "load"、"network"、"dom", 默认为 "load")
         """
         load_state_mapping = {
-            # 等待页面完全加载
-            "load": "load",
-            # 等待网络空闲
-            "network": "networkidle",
-            # 等待 DOMContentLoaded 事件触发，即HTML文档被完全加载和解析，不包括样式表、图片和其他资源
-            "dom": "domcontentloaded"
+            "load": "load",  # 等待页面完全加载
+            "network": "networkidle",  # 等待网络空闲
+            "dom": "domcontentloaded"  # 等待 DOMContentLoaded 事件触发，即HTML文档被完全加载和解析，不包括样式表、图片和其他资源
         }
         page_state = load_state_mapping.get(state)
         self.page.wait_for_load_state(state=page_state, timeout=self.load_state_timeout)
@@ -97,43 +114,41 @@ class BasePage:
         """设置页面的默认导航超时时间"""
         self.page.set_default_navigation_timeout(timeout=self.default_navigation_timeout)
 
-    def go_back(self):
-        """回退到上一个页面"""
-        self.page.go_back(timeout=self.load_state_timeout, wait_until="load")
+    def page_operation(self, reload=False, forward=False, back=False):
+        """
+        浏览器页面操作
 
-    def go_forward(self):
-        """前进到下一个页面"""
-        self.page.go_forward(timeout=self.load_state_timeout, wait_until="load")
+        Args：
+            reload: 刷新
+            forward: 前进
+            back: 回退
+        """
+        if reload:
+            self.page.reload()
+        if back:
+            self.page.go_back()
+        if forward:
+            self.page.go_forward()
 
-    def reload(self):
-        """重新加载当前页面"""
-        self.page.reload(timeout=self.load_state_timeout, wait_until="load")
-
-    def wait_for_url(self, url):
+    def wait_for_url(self, url: str):
         """在页面上设置一个等待，等待URL变为指定的URL"""
         self.page.wait_for_url(url)
 
     def page_content(self):
-        """获取页面的完整HTML内容，包括文档类型"""
-        self.page.content()
-        log.info(self.page.content())
+        """获取页面的完整HTML内容 (包括文档类型)"""
+        html = self.page.content()
+        log.info(f"页面的完整HTML内容: {html}")
 
-    def frames(self):
+    def inner_html(self, selector: str):
+        """获取某个元素的HTML内容"""
+        ele_html = self.locator(selector).inner_html()
+        log.info(f"元素的的HTML内容: {ele_html}")
+
+    def get_frames(self):
         """获取页面所有的iframes"""
         frames = self.page.frames
         for f in frames:
             log.info(f"获取到的frames：{f}")
-
-    @log_action
-    def find_by_frame_name(self, name: str, selector: str):
-        """根据frame的name属性定位"""
-        frame_ele = self.page.frame(name).locator(selector)
-        return frame_ele
-
-    def find_by_frame_id(self, selector: str, selector_or_locator: str):
-        """根据frame的id属性定位"""
-        frame_ele = self.page.frame_locator(selector).locator(selector_or_locator)
-        return frame_ele
 
     @log_action
     def goto(self, url: str):
@@ -156,9 +171,10 @@ class BasePage:
             self.page = pages[page_index]
             return self.page
         else:
-            log.error(f"窗口索引 {page_index} 超出范围")
+            log.warning(f"窗口索引 {page_index} 超出范围")
 
-    def switch_to_page(self, title=None, url=None):
+    @log_action
+    def switch_page(self, title=None, url=None):
         """切换到指定title或url的标签页"""
         for item_page in self.page.context.pages:
             if title:
@@ -170,7 +186,7 @@ class BasePage:
                     item_page.bring_to_front()
                     return item_page
         else:
-            log.info("未找到相应title或url的标签页")
+            log.error("未找到相应title或url的标签页")
         return self.page.context.pages[0]
 
     def find(self, ele_type: str, text: str, **kwargs):
@@ -190,25 +206,21 @@ class BasePage:
             locator_function = getattr(self.page, locator)
             return locator_function(text, **kwargs)
         else:
-            log.error(f"定位器类型 {ele_type} 无效")
-
-    def loc_all(self, selector: str):
-        """查找所有匹配指定选择器的元素"""
-        elements = self.page.locator(selector).all()
-        return elements
+            log.warning(f"无效的定位器类型: {ele_type}")
 
     @log_action
     def type(self, text: str, selector: str = None):
         """
-        模拟逐字符键入文本
+        模拟人工逐字符键入文本
 
-        Args:
+        Args：
             text (str): 要输入的文本字符串
             selector (str, optional): 定位页面元素的选择器
         """
         if selector:
             ele = self.locator(selector)
             if ele.is_editable():
+                ele.focus()
                 self.page.keyboard.type(text)
         else:
             self.page.keyboard.type(text)
@@ -216,15 +228,25 @@ class BasePage:
     @log_action
     def press(self, key: str, selector: str = None):
         """
-        模拟按键操作（支持同时按下多个键）
+        模拟按键操作 (支持同时按下多个键)
 
-        Args:
-            key (str): 要按下的键
+        Args：
+            key (str): 要按下的键 (组合键示例"Control+A")
             selector (str, optional): 定位页面元素的选择器
+
+            以下是一些常见的键盘按键：
+                所有字母和数字键 ('a', 'b', 'c', ..., 'z', 'A', 'B', ..., 'Z', '0', '1', ..., '9')
+                功能键 ('F1', 'F2', ..., 'F12')
+                方向键 ('ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight')
+                特殊键 ('Tab', 'Enter', 'Backspace', 'Delete', 'Escape', 'Shift', 'Control', 'Alt', 'Meta',
+                      'CapsLock', 'PageUp', 'PageDown', 'End', 'Home', 'Insert', 'ContextMenu')
+                符号键 ('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '`', '~', '[', ']',
+                      '{', '}', '|', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?', '\', '|')
         """
         if selector:
             ele = self.locator(selector)
             if ele.is_editable():
+                ele.focus()
                 self.page.keyboard.press(key)
         else:
             self.page.keyboard.press(key)
@@ -235,38 +257,80 @@ class BasePage:
         self.locator(selector).clear()
 
     @log_action
-    def click_all(self, selector: str):
-        """对所有匹配的元素列表遍历点击"""
-        elements = self.loc_all(selector)
-        for ele in elements:
-            ele.click()
-
-    def inner_texts(self, selector: str):
-        """提取所有匹配的元素的内部文本"""
-        elements = self.loc_all(selector)
-        text_list = [ele.inner_text() for ele in elements]
-        log.info(f"提取选择器匹配的 {selector} 元素的文本: {text_list}")
-        return text_list
+    def click_elements(self, selector: str):
+        """对元素列表遍历点击"""
+        elements = self.page.locator(selector).all()
+        [ele.click() for ele in elements]
 
     @log_action
-    def attr_values(self, selector: str, attribute: str):
-        """提取所有匹配的元素的指定属性值"""
-        elements = self.loc_all(selector)
-        attribute_values = [ele.get_attribute(attribute) for ele in elements]
-        log.info(f"提取选择器匹配的 {selector} 元素的 {attribute} 属性值: {attribute_values}")
+    def fill_elements(self, selector: str, input_value: str):
+        """在元素列表遍历输入"""
+        elements = self.page.locator(selector).all()
+        [ele.fill(input_value) for ele in elements]
+
+    def all_inner_texts(self, selector: str):
+        """提取元素列表的内部文本"""
+        text_list = self.page.locator(selector).all_inner_texts()
+        log.info(f"元素列表 [{selector}] 的文本为: {text_list}")
+        return text_list
+
+    def all_attribute_values(self, selector: str, attr: str):
+        """提取元素列表的指定属性值"""
+        elements = self.page.locator(selector).all()
+        attribute_values = [element.get_attribute(attr) for element in elements]
+        log.info(f"元素列表 [{selector}] 的属性 {attr} 值为: {attribute_values}")
         return attribute_values
 
     @log_action
-    def fill_all(self, selector: str, value: str):
-        """在所有匹配的元素列表遍历输入"""
-        elements = self.loc_all(selector)
-        for element in elements:
-            element.fill(value)
+    def set_checked(self, selector: str, checked: bool = True):
+        """
+        设置单选框 (radio) 和复选框 (checkbox) 的选中状态
+
+        Args：
+            selector (str): 定位页面元素的选择器
+            checked (bool): 设置选中状态，默认为True
+        """
+        self.locator(selector).set_checked(checked=checked)
 
     @log_action
-    def check(self, selector: str, checked: bool = True):
-        """选中或取消选中单选框/复选框"""
-        self.locator(selector).set_checked(checked=checked)
+    def all_checkbox_check(self, selector: str, checked: bool = True):
+        """复选框 (checkbox) 全选或取消全选"""
+        items = self.page.locator(selector).all()
+        for item in items:
+            item.set_checked(checked=checked)
+
+    @log_action
+    def select_option(self, selector, option_type="label", option=None):
+        """
+        在下拉框中选择选项
+
+        Args：
+            selector (str): 下拉框的选择器
+            option_type (str, optional): 选项类型。 默认为"text"，可选值为 "text", "index", "value"
+            option (str or int, optional): 要选择的选项。 可以是文本（str）、索引（int）、值（str）、列表（List）
+        """
+        dropdown = self.page.locator(selector)
+        if option_type == "label":
+            dropdown.select_option(label=option)
+        elif option_type == "index":
+            dropdown.select_option(index=option)
+        elif option_type == "value":
+            dropdown.select_option(value=option)
+        else:
+            log.warning("无效的选项类型")
+
+    def select_all_options(self, selector):
+        """
+        在下拉框中选择所有选项
+
+        Args:
+            selector (str): 下拉框的选择器
+        """
+        dropdown = self.page.locator(selector)
+        # 打开下拉框
+        dropdown.click()
+        options = dropdown.locator('option').all_inner_texts()
+        dropdown.select_option(label=options)
 
     def click_option(self, selector: str, dropdown_selector: str, target_option_text=None, select_all=False):
         """
@@ -315,75 +379,24 @@ class BasePage:
                         option.nth(-1).hover()
                         log.info(f"在下拉选项中找不到'{text}' >>> 已悬停至最后一个选项'{option.nth(-1).text_content()}'")
 
-    def select_option(self, selector, option_type="text", option=None):
-        """
-        在下拉框中选择选项
-
-        Args：
-            selector (str): 下拉框的选择器
-            option_type (str, 可选): 选项类型。 默认为"text"，可选值为 "text", "index", "value"
-            option (str or int, 可选): 要选择的选项。 可以是文本（str），索引（int），值（str），列表（List）
-        """
-        dropdown = self.page.locator(selector)
-        if option_type == "text":
-            dropdown.select_option(label=option)
-        elif option_type == "index":
-            dropdown.select_option(index=option)
-        elif option_type == "value":
-            dropdown.select_option(value=option)
-        else:
-            log.warning("无效的选项类型")
-
-    def get_all_options(self, selector, option_type="text"):
-        """
-        获取下拉框中所有选项的文本或值
-
-        Args：
-            selector (str): 下拉框的选择器
-            option_type (str, 可选): 选项类型。 默认为 "text"，可选值为 "text", "value"
-
-        Returns (list)：
-            包含所有选项文本或值的列表
-        """
-        dropdown = self.page.locator(selector)
-        options = []
-        for option in dropdown.locator("option").all():
-            if option_type == "text":
-                options.append(option.inner_text())
-            elif option_type == "value":
-                options.append(option.get_attribute("value"))
-        return options
-
-    def select_all_options(self, selector, option_type="text"):
-        """
-        遍历选择下拉框中的所有选项
-
-        Args：
-            selector (str): 下拉框的选择器
-            option_type (str, 可选): 选项类型。默认为 "text"，可选值为 "text", "value"
-        """
-        all_options = self.get_all_options(selector, option_type)
-        for option in all_options:
-            self.select_option(selector, option, option_type)
-
     @log_action
-    def drag_element(self, source: str, target: str):
+    def drag_to(self, source: str, target: str):
         """拖动一个元素从源位置到目标位置"""
         self.locator(source).drag_to(self.locator(target))
-
-    @log_action
-    def drag_and_drop(self, source, target):
-        """执行拖动和释放操作: 将一个元素从源位置拖动到目标位置"""
-        self.locator(source).hover()
-        self.page.mouse.down()
-        self.locator(target).hover()
-        self.page.mouse.up()
 
     def hover(self, selector: str):
         """鼠标悬停至指定元素(也会自动去页面上找到元素，使其出现在可视窗口)"""
         ele = self.locator(selector)
         ele.hover()
         return ele
+
+    @log_action
+    def drag_and_drop(self, source, target):
+        """执行拖动和释放操作: 将一个元素从源位置拖动到目标位置"""
+        self.hover(source)
+        self.page.mouse.down()
+        self.hover(target)
+        self.page.mouse.up()
 
     @log_action
     def left_click(self, selector: str):
@@ -401,9 +414,10 @@ class BasePage:
         self.hover(selector).dblclick()
 
     @log_action
-    def scroll_to_element(self, selector: str):
-        """滚动到指定的元素"""
-        self.page.evaluate(f"document.querySelector('{selector}').scrollIntoView();")
+    def scroll_to_ele(self, selector):
+        """滚动到元素出现位置（元素会出现在屏幕的正中间）"""
+        self.locator(selector).scroll_into_view_if_needed()
+        self.screenshot(full_page=True)
 
     @log_action
     def scroll_to_top(self):
@@ -416,11 +430,13 @@ class BasePage:
         self.page.evaluate('window.scrollTo(0, document.body.scrollHeight);')
 
     @log_action
-    def execute_js(self, script: str):
+    def execute_script(self, script: str, selector: str = None):
         """执行JavaScript脚本"""
-        self.page.evaluate(script)
+        if selector is not None:
+            self.locator(selector).evaluate(script)
+        else:
+            self.page.evaluate(script)
 
-    @log_action
     def upload_file(self, file_path='input[type=file]'):
         """上传文件"""
         ele = self.locator(file_path)
@@ -481,10 +497,9 @@ class BasePage:
         else:
             self.page.locator(locator).nth(index).wait_for(timeout=self.timeout, state='hidden')
 
-
     @log_action
     def fill_all_from_index(self, selector: str, input_values: list, start_index: int = 1) -> None:
-        """模型设计业务：在指定元素列表的索引处遍历输入文本"""
+        """[模型设计业务]：在指定元素列表的索引处遍历输入文本"""
         elements = self.page.locator(selector).all()
 
         for index, ele in enumerate(elements, start=0):
@@ -496,7 +511,7 @@ class BasePage:
 
     @log_action
     def select_field_options(self, field_types: str, field_type_items: str, start_index: int, hover_field: str = None):
-        """模型设计业务：遍历选择字段类型和下拉列表项"""
+        """[模型设计业务]：遍历选择字段类型和下拉列表项"""
         elements = self.page.locator(field_types).all()
 
         for index, ele in enumerate(elements, start=0):

@@ -106,18 +106,29 @@ def _init_js(page):
 def context(request):
     browser_type = str(request.config.getoption("--browser"))
     headless = request.config.getoption("--headless").lower() == "true"
-
     p = sync_playwright().start()
-    browser = getattr(p, browser_type).launch(headless=headless, args=['--start-maximized'])
-    context = browser.new_context(no_viewport=True)
-    # context.tracing.start(screenshots=True, snapshots=True, sources=True)  # 在创建/导航页面之前开始跟踪
+    # iphone_12 = p.devices['iPhone 12']
 
+    browser = getattr(p, browser_type).launch(
+        headless=headless,
+        args=['--start-maximized']
+    )
+
+    context = browser.new_context(
+        no_viewport=True,  # 用于模拟特定移动设备的显示效果，以确保网页在该设备上的显示效果与预期一致，模拟移动设备测试时要设置为 =False
+        # **iphone_12,
+        # is_mobile=True,
+        # viewport={"width": 320,"height": 480},
+        # record_video_dir='./outputs/videos', # 启用视频录制
+        # record_video_size={'width': 1280, 'height': 720}  # 设置录制视频的尺寸
+    )
+    # context.tracing.start(screenshots=True, snapshots=True, sources=True)  # 在创建/导航页面之前开始跟踪
     yield context
     # context.tracing.stop(path="trace.zip")      # 停止跟踪并将其导出到zip存档中
     # 使用 Playwright CLI 或在浏览器中打开保存的跟踪   playwright show-trace trace.zip
     # URL 打开远程跟踪    playwright show-trace https://example.com/trace.zip
-    context.close()
     browser.close()
+    p.stop()
 
 
 # pytest path --env=test --browser=chromium --headless=True --init_js=True
@@ -127,10 +138,7 @@ def page(request, context):
     # init_js = request.config.getoption("--init_js").lower() == "true"
     # if init_js is True:
     #     page = _init_js(page)
-
     yield page
-    page.close()
-
 
 # 获取环境配置
 @pytest.fixture(scope="session")
@@ -165,7 +173,7 @@ def pytest_runtest_makereport(item, call):
             allure.attach(
                 name="Failure Screenshot",
                 body=screenshot,
-                attachment_type=allure.attachment_type.PNG,
+                attachment_type=allure.attachment_type.PNG
             )
 
 

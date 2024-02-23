@@ -16,12 +16,15 @@ def test_login(p, usr, pwd, page):
     with allure.step("断言"):
         p.assert_ele_hidden("#kc-login")
 
+    # p.goto("https://auto-fly-standard-test.flydiysz.cn/mod300079401/various-types-of-components")
+    # p.wait(2)
+    # p.select_all_options(selector="#country")
+
 
 @pytest.mark.parametrize("option", ["旧模板"])
 def test_create_app(p, option):
     p.click(".add-app-btn")
     p.fill("input[formcontrolname='name']", f"auto{time.strftime('%Y%m%d%H%M%S')}")
-    # p.fill("input[formcontrolname='code']", f"auto{time.strftime('%Y%m%d%H%M%S')}")
     p.click("fly-select[formcontrolname='templateVersionType']")
     p.click(f"fly-option-item[title='{option}']")
     p.click("span >> text='确定'")
@@ -30,7 +33,7 @@ def test_create_app(p, option):
 @pytest.mark.parametrize("group_name, group_code", [("group", f"code{time.strftime('%Y_%m_%d_%H_%M_%S')}")])
 def test_create_dict_group(p, group_name, group_code):
     p.click("//div[text()='数据字典']")
-    p.right_click(".ra-tree-treenode-switcher-open .ra-tree-title")
+    p.right_click(".ra-tree-treenode-switcher-open >> .ra-tree-title")
     p.click("span >> text='新增字典分组'")
     p.fill("input[formcontrolname='name']", group_name)
     p.fill("input[formcontrolname='code']", group_code)
